@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tableLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dip" 
+        android:paddingLeft="10dip"
+        android:paddingBottom="10dip"
+        android:gravity="center" >
+    
+    <TextView android:id="@+id/text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Nom :"
+              android:textSize="25sp"
+       		  android:paddingLeft="5sp"
+       		  android:layout_marginTop="10dp" />
+    <EditText
+                    android:id="@+id/name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                 /> 
+    </TableRow>
+    <TableRow
+        android:id="@+id/tableRow4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dip" 
+        android:paddingLeft="10dip"
+        android:paddingBottom="10dip"
+        android:gravity="center">
+    <TextView android:id="@+id/text2"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Ajouter une photo : " 
+              android:textSize="25sp"
+        android:paddingLeft="5sp" 
+        android:layout_marginTop="5dp"/>
+    <ImageView
+        android:id="@+id/imageButton1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:onClick="TakePicture"
+        android:src="@drawable/ic_action_camera" 
+        android:layout_marginLeft="25dp"/>
+    </TableRow>
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dip" 
+        android:paddingLeft="10dip"
+        android:paddingBottom="10dip"
+        android:gravity="center" >
+    <TextView android:id="@+id/text3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Localiser l'observation :" 
+        android:textSize="25sp"
+        android:layout_marginTop="5dp"/>
+    <ImageView
+        android:id="@+id/location"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_action_location_found" 
+        android:onClick="locateOnMap"
+        android:layout_marginLeft="25dp"/>
+     </TableRow>
+     <TableLayout 
+         android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+     <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dip"
+        android:gravity="center">
+    
+	
+	<Button android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="effacer" 
+            android:onClick="deleteObservation"
+            android:background="#ff0000"
+            android:padding="10dp"
+            />
+	<Button android:id="@+id/update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="valider"
+            android:onClick="updateObservation"
+            android:background="#a4c639"
+            android:padding="10dp" 
+            android:layout_marginLeft="25dp"/>
+</TableRow>
+  
+ </TableLayout>             
+
+</TableLayout>

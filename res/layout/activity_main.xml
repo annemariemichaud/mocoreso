@@ -1,0 +1,88 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lilahammer.mocoreso.MainActivity" >
+<TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="25dip" 
+        android:paddingBottom="25dip"
+         android:gravity="center"
+         android:onClick="afficheAddActivity" >
+         <ImageView
+        android:id="@+id/imageadd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_edit"/>
+    <TextView
+        android:id="@+id/addbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="ajouter une observation"
+        android:textSize="25sp"
+        android:paddingLeft="5sp"
+        />
+    
+</TableRow>
+<View android:background="#d3d3d3" 
+        android:layout_width = "fill_parent" 
+        android:layout_height="1dip" 
+        android:layout_centerVertical ="true" 
+        android:layout_above="@id/addbutton"/>
+<TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="25dip" 
+        android:paddingBottom="25dip"
+         android:gravity="center"
+         android:onClick="afficheListActivity" >
+    <ImageView
+        android:id="@+id/imagelist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_view_as_list"/>
+    <TextView
+        android:id="@+id/listbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addbutton"
+        android:text="liste des observations"
+        
+        android:textSize="25sp"
+        android:paddingLeft="5sp" />
+</TableRow>/
+<View android:background="#d3d3d3" 
+        android:layout_width = "fill_parent" 
+        android:layout_height="1dip" 
+        android:layout_centerVertical ="true" 
+        android:layout_above="@id/addbutton"/>
+<TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:paddingTop="25dip" 
+        android:paddingBottom="25dip"
+         android:gravity="center"
+         android:onClick="afficheMapActivity" 
+         >
+    <ImageView
+        android:id="@+id/imagemap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_map"/>
+    <TextView
+        android:id="@+id/mapbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/listbutton"
+        android:layout_centerVertical="true"
+        android:text="carte des observations"
+        
+        android:textSize="25sp"
+        android:paddingLeft="5sp" />
+</TableRow>
+</TableLayout>
