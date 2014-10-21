@@ -152,6 +152,8 @@ public class LocationMap extends Activity implements OnMapClickListener,
 		returnIntent.putExtra("latitude", stringlatitude);
 		returnIntent.putExtra("longitude", stringlongitude);
 		setResult(RESULT_OK, returnIntent);
+		Toast.makeText(this, "Localisation enregistrée",
+				Toast.LENGTH_LONG).show();
 		finish();
 	}
 

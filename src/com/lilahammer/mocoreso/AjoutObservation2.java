@@ -175,7 +175,7 @@ public class AjoutObservation2 extends Activity {
 	 
 		
 		
-		if (photoFile != null  && !name.isEmpty() && (lat ==0 || lon ==0)){
+		if (photoFile != null  && !name.isEmpty() && (lat !=0 || lon !=0)){
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			String currentDateandTime = sdf.format(new Date());
 			dbmoco = new DataAdapter(this);
