@@ -1,10 +1,7 @@
 package com.lilahammer.mocoreso;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,29 +10,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class UpdateObservation extends Activity {
 
-	private Uri fileUri = null;
-	private File photoFile ;
-	private double lat = 0;
-	private double lon = 0;
+
 	private String oldname;
-	private static final int REQUEST_IMAGE_CAPTURE = 1;
-	private String mCurrentPhotoPath;
 	private DataAdapter dbmoco;
 	private String date;
+	private File photoFile;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +40,7 @@ public class UpdateObservation extends Activity {
 		dbmoco = new DataAdapter(this);
 		Observation observation = dbmoco.getObservationsByName(name);
 		edittext.setText(name);
+		date = observation.getDate();
 		File file = new File(observation.getPath());
 		photoFile = new File(observation.getPath());
 		Uri bitmapuri = Uri.parse(file.toString());
