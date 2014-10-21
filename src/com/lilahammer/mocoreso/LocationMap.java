@@ -144,8 +144,7 @@ public class LocationMap extends Activity implements OnMapClickListener,
 	}
 
 	public void envoyerLocalisation() {
-		Toast.makeText(this, "localisation" + lat + lng,
-				Toast.LENGTH_LONG).show();
+		
 		Intent returnIntent = new Intent();
 		 
 		String stringlatitude = String.valueOf(lat);

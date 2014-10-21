@@ -31,14 +31,11 @@ public class AjoutObservation2 extends Activity {
 	private File photoFile = null;
 	private double lat = 0;
 	private double lon = 0;
-	private Location location;
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
-	private String mCurrentPhotoPath;
 	private DataAdapter dbmoco;
 	private int targetW;
 	private int targetH;
 	private int scaleFactor;
-	private Object bmp;
 	private Bitmap bitmap;
 
 	@Override
@@ -53,15 +50,7 @@ public class AjoutObservation2 extends Activity {
 		ActionBar actionBar = getActionBar();
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
-		// retrouver la meilleure localisation enregistrée
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		location = locationManager.getLastKnownLocation(locationManager
-				.getBestProvider(criteria, false));
-		//Intent intent = getIntent();
-		//String imageUri = intent.getStringExtra("imageUri");
-		//Uri photoUri = Uri.parse(imageUri);
-		//setPic(photoUri);
+		
 	}
 
 	// méthode pour lancer l'activité de localisation
@@ -86,8 +75,7 @@ public class AjoutObservation2 extends Activity {
 				startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 				sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
 					Uri.fromFile(photoFile)));
-				//"file://"
-				//+ Environment.getExternalStorageDirectory())
+				
 			}
 		}
 	}
@@ -133,20 +121,6 @@ public class AjoutObservation2 extends Activity {
 		String imageFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).
 			    getAbsolutePath() + imageFileName;  
 			    File imageFile = new File(imageFilePath); 
-		//File storageDir = Environment
-		//		.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-		//if (!storageDir.exists()) {
-		//	if (!storageDir.mkdirs()) {
-		//		Log.d("moco", "failed to create directory");
-		//		return null;
-			//}
-		//}
-		//File image = File.createTempFile(imageFileName, /* prefix */
-		//		".jpg", /* suffix */
-		//		storageDir /* directory */
-		//);
-		// Save a file: path for use with ACTION_VIEW intents
-		//mCurrentPhotoPath = "file:" + image.getAbsolutePath();
 		return imageFile;
 	}
 
@@ -193,25 +167,37 @@ public class AjoutObservation2 extends Activity {
 	}
 
 	public void saveObservation(View view) {
-
-		dbmoco = new DataAdapter(this);
+		
+		
 		EditText mEdit = (EditText) findViewById(R.id.name);
+		
 		String name = mEdit.getText().toString();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		String currentDateandTime = sdf.format(new Date());
-		if (photoFile.getPath() == null) {
-			Toast.makeText(this, "Photo requise", Toast.LENGTH_LONG).show();
-			return;
-		}
-		if (name.isEmpty()) {
-			Toast.makeText(this, "Nom requis", Toast.LENGTH_LONG).show();
-			return;
-		}
-		dbmoco.insertObservation(name, lat, lon, currentDateandTime,
+	 
+		
+		
+		if (photoFile != null  && !name.isEmpty() && (lat ==0 || lon ==0)){
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			String currentDateandTime = sdf.format(new Date());
+			dbmoco = new DataAdapter(this);
+			dbmoco.insertObservation(name, lat, lon, currentDateandTime,
 				photoFile.getPath());
 		Toast.makeText(this, "Observation enregistrée",
 				Toast.LENGTH_LONG).show();
-		finish();
+		finish();}
+		else {
+			if (photoFile == null) {
+				Toast.makeText(this, "Photo requise", Toast.LENGTH_LONG).show();
+				return;
+			}
+			if (name.isEmpty()) {
+				Toast.makeText(this, "Nom requis", Toast.LENGTH_LONG).show();
+				return;
+			}
+			if (lat ==0 || lon ==0) {
+				Toast.makeText(this, "Localisation requise", Toast.LENGTH_LONG).show();
+				return;
+			}
+		}
 	}
 
 	public void annuler(View view) {
