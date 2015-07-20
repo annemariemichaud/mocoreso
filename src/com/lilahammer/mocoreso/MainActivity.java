@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 		
 			
 		
-		Intent intent = new Intent(this, AjoutObservation2.class);
+		Intent intent = new Intent(this, AddObservation.class);
 		startActivity(intent);
 	}
 

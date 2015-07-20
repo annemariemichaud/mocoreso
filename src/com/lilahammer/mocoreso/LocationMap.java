@@ -13,9 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,14 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class LocationMap extends Activity implements OnMapClickListener,
 		OnMapLongClickListener, OnMarkerDragListener,
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
+	LocationListener {
 
 	private GoogleMap myMap;
 	private boolean markerClicked;
 	private double lat;
 	private double lng;
-	private LocationClient mLocationClient;
+	
 
 	// Milliseconds per second
 	private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -64,7 +61,7 @@ public class LocationMap extends Activity implements OnMapClickListener,
 		ActionBar actionBar = getActionBar();
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
-		mLocationClient = new LocationClient(this, this, this);
+		
 		// Create the LocationRequest object
 		mLocationRequest = LocationRequest.create();
 		// Use high accuracy
@@ -87,13 +84,13 @@ public class LocationMap extends Activity implements OnMapClickListener,
 	protected void onStart() {
 		super.onStart();
 		// Connect the client.
-		mLocationClient.connect();
+		
 	}
 
 	@Override
 	protected void onStop() {
 		// Disconnecting the client invalidates it.
-		mLocationClient.disconnect();
+		
 		super.onStop();
 	}
 
@@ -163,19 +160,9 @@ public class LocationMap extends Activity implements OnMapClickListener,
 		finish();
 	}
 
-	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onConnected(Bundle arg0) {
-		// TODO Auto-generated method stub
 	
-		mLocationClient.requestLocationUpdates(mLocationRequest, this);
-		
-	}
+
+	
 
 	public void onLocationChanged(Location location) {
 		// Report to the UI that the location was updated
@@ -184,7 +171,7 @@ public class LocationMap extends Activity implements OnMapClickListener,
 			MapFragment myMapFragment = (MapFragment) myFragmentManager
 					.findFragmentById(R.id.map1);
 			myMap = myMapFragment.getMap();
-			location = mLocationClient.getLastLocation();
+		
 			myMap.setMyLocationEnabled(true);
 			myMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 			myMap.setOnMapClickListener(this);
@@ -212,11 +199,7 @@ public class LocationMap extends Activity implements OnMapClickListener,
 
 	}
 
-	@Override
-	public void onDisconnected() {
-		// TODO Auto-generated method stub
-
-	}
+	
 	@Override
 	protected void onResume() {
 	  super.onResume();
