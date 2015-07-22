@@ -156,8 +156,9 @@ public class ListeObservationsActivity extends Activity {
 				Uri bitmapuri = Uri.fromFile(file);
 
 				try {
+					int valueInPixels = (int) getResources().getDimensionPixelSize(R.dimen.size_photo);
 					images_bitmap[i] = decodeSampledBitmapFromResource(
-							bitmapuri, 150, 150);
+							bitmapuri, valueInPixels, valueInPixels/2);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
