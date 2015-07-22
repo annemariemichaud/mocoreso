@@ -4,5 +4,5 @@
     <string name="app_name">Mocoreso</string>
     <string name="nom">Nom de l\'observation</string>
     <string name="description">Prendre une photo</string>
-
+	<string name="photo">Photo de l\'observation</string>
 </resources>

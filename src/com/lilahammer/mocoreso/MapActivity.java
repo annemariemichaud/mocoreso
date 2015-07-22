@@ -30,7 +30,7 @@ public class MapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.map_activity);
+		setContentView(R.layout.mapactivity_layout);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayUseLogoEnabled(false);
 		actionBar.setDisplayHomeAsUpEnabled(true);
