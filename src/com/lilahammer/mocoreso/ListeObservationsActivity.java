@@ -6,11 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +15,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,7 +38,7 @@ public class ListeObservationsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.list_activity);
+		setContentView(R.layout.listeobservation_layout);
 		mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
 		ActionBar actionBar = getActionBar();
@@ -64,7 +58,6 @@ public class ListeObservationsActivity extends Activity {
 
 		observations = dbmoco.getObservations();
 		gridview = (GridView) findViewById(R.id.gridview);
-		// Start download
 		new GetImageData().execute(observations);
 		mProgressBar.setVisibility(View.VISIBLE);
 

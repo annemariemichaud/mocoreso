@@ -17,6 +17,7 @@ public class DataAdapter {
 	private SQLiteDatabase sqliteDatabase;
 	private Observation observation;
 	private ArrayList<Observation> MyObservations;
+	
 
 	// Constructeur
 	public DataAdapter(Context context) {
@@ -28,18 +29,7 @@ public class DataAdapter {
 			String currentDateandTime, String path) {
 
 		sqliteDatabase = datamo.getWritableDatabase();
-		
-			/*	ContentValues contentValues2 = new ContentValues();
-				contentValues2.put(BaseDonnees.DATE_UNIQUE, currentDateandTime);
 
-				long id2 = sqliteDatabase.insert(BaseDonnees.TABLE_DATE, null,
-						contentValues2);
-				if (id2 < 0) {
-					Log.d("d", "problème insertion données table date");
-				} else {
-					Log.d("d", "insertion réussie!");
-				}*/
-				
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(BaseDonnees.NAME, name);
 		contentValues.put(BaseDonnees.LAT, lat);
@@ -47,14 +37,8 @@ public class DataAdapter {
 		contentValues.put(BaseDonnees.DATE, currentDateandTime);
 		contentValues.put(BaseDonnees.PATH_PHOTO, path);
 
-		long id = sqliteDatabase.insert(BaseDonnees.TABLE_NAME,
+		sqliteDatabase.insert(BaseDonnees.TABLE_NAME,
 				BaseDonnees.LAT, contentValues);
-		if (id < 0) {
-			Log.d("d", "problème insertion données table name");
-		} else {
-			Log.d("d", "insertion réussie!");
-		}
-		
 		sqliteDatabase.close();
 	}
 
@@ -66,15 +50,17 @@ public class DataAdapter {
 				BaseDonnees.NAME + " =? ", whereArgs);
 		return count;
 	}
+
 	// supprimer les dates
-		public int deleteDate(String date) {
-			sqliteDatabase = datamo.getWritableDatabase();
-			String[] whereArgs = { date};
-			int count = sqliteDatabase.delete(BaseDonnees.TABLE_DATE,
-					BaseDonnees.DATE_UNIQUE + " =? ", whereArgs);
-			return count;
-		}
-	//mettre à jour les observations par name 
+	public int deleteDate(String date) {
+		sqliteDatabase = datamo.getWritableDatabase();
+		String[] whereArgs = { date };
+		int count = sqliteDatabase.delete(BaseDonnees.TABLE_DATE,
+				BaseDonnees.DATE_UNIQUE + " =? ", whereArgs);
+		return count;
+	}
+
+	// mettre à jour les observations par name
 	public int updatedata(String oldname, String name, double lat, double lon,
 			String currentDateandTime, String path) {
 		sqliteDatabase = datamo.getWritableDatabase();
@@ -92,7 +78,7 @@ public class DataAdapter {
 
 	// récupérer les observations par name
 	public Observation getObservationsByName(String oldname) {
-		
+
 		sqliteDatabase = datamo.getWritableDatabase();
 		String[] columns = { BaseDonnees.NAME, BaseDonnees.DATE,
 				BaseDonnees.LAT, BaseDonnees.LONG, BaseDonnees.PATH_PHOTO };
@@ -111,41 +97,41 @@ public class DataAdapter {
 			String path = cursor.getString(index4);
 			int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
 			String date = cursor.getString(index5);
-			observation = new Observation(name, latitude, longitude, path,date);
-			
+			observation = new Observation(name, latitude, longitude, path, date);
+
 		}
 		cursor.close();
 		sqliteDatabase.close();
 		return observation;
 	}
-	
-	// récupérer toutes les observations 
-		public ArrayList<Observation> getObservations() {
-			
-			sqliteDatabase = datamo.getWritableDatabase();
-			String[] columns = { BaseDonnees.NAME, BaseDonnees.DATE,
-					BaseDonnees.LAT, BaseDonnees.LONG, BaseDonnees.PATH_PHOTO };
-			Cursor cursor = sqliteDatabase.query(BaseDonnees.TABLE_NAME, columns,
-					null, null, null, null,null);
-			MyObservations = new ArrayList<Observation>();
-			while (cursor.moveToNext()) {
-				int index1 = cursor.getColumnIndex(BaseDonnees.NAME);
-				String name = cursor.getString(index1);
-				int index2 = cursor.getColumnIndex(BaseDonnees.LAT);
-				double latitude = cursor.getDouble(index2);
-				int index3 = cursor.getColumnIndex(BaseDonnees.LONG);
-				double longitude = cursor.getDouble(index3);
-				int index4 = cursor.getColumnIndex(BaseDonnees.PATH_PHOTO);
-				String path = cursor.getString(index4);
-				int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
-				String date = cursor.getString(index5);
-				observation = new Observation(name, latitude, longitude, path,date);
-				MyObservations.add(observation);
-			}
-			cursor.close();
-			sqliteDatabase.close();
-			return MyObservations;
+
+	// récupérer toutes les observations
+	public ArrayList<Observation> getObservations() {
+
+		sqliteDatabase = datamo.getWritableDatabase();
+		String[] columns = { BaseDonnees.NAME, BaseDonnees.DATE,
+				BaseDonnees.LAT, BaseDonnees.LONG, BaseDonnees.PATH_PHOTO };
+		Cursor cursor = sqliteDatabase.query(BaseDonnees.TABLE_NAME, columns,
+				null, null, null, null, null);
+		MyObservations = new ArrayList<Observation>();
+		while (cursor.moveToNext()) {
+			int index1 = cursor.getColumnIndex(BaseDonnees.NAME);
+			String name = cursor.getString(index1);
+			int index2 = cursor.getColumnIndex(BaseDonnees.LAT);
+			double latitude = cursor.getDouble(index2);
+			int index3 = cursor.getColumnIndex(BaseDonnees.LONG);
+			double longitude = cursor.getDouble(index3);
+			int index4 = cursor.getColumnIndex(BaseDonnees.PATH_PHOTO);
+			String path = cursor.getString(index4);
+			int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
+			String date = cursor.getString(index5);
+			observation = new Observation(name, latitude, longitude, path, date);
+			MyObservations.add(observation);
 		}
+		cursor.close();
+		sqliteDatabase.close();
+		return MyObservations;
+	}
 
 	// récupérer les observations par date
 	public ArrayList<String> getObservationsByDate(String currentDateandTime) {
@@ -166,25 +152,24 @@ public class DataAdapter {
 	}
 
 	// récupère les dates d'observations
-		public ArrayList<String> getAllDate() {
-			sqliteDatabase = datamo.getWritableDatabase();
-			String[] columns = { BaseDonnees.UID_2, BaseDonnees.DATE_UNIQUE };
-			Cursor cursor = sqliteDatabase.query(BaseDonnees.TABLE_DATE, null,
-					null, null, null, null, null);
-			ArrayList<String> buffer = new ArrayList<String>();
-			while (cursor.moveToNext()) {
-				int index1 = cursor.getColumnIndex(BaseDonnees.DATE_UNIQUE);
-				String date = cursor.getString(index1);
-				String annees = date.substring(0, 4);
-				String mois = date.substring(4, 6);
-				String jour = date.substring(6, 8);
-				date = jour + "-" + mois + "-" + annees;
-				buffer.add(date);
-			}
-			cursor.close();
-			sqliteDatabase.close();
-			return buffer;
+	public ArrayList<String> getAllDate() {
+		sqliteDatabase = datamo.getWritableDatabase();
+		Cursor cursor = sqliteDatabase.query(BaseDonnees.TABLE_DATE, null,
+				null, null, null, null, null);
+		ArrayList<String> buffer = new ArrayList<String>();
+		while (cursor.moveToNext()) {
+			int index1 = cursor.getColumnIndex(BaseDonnees.DATE_UNIQUE);
+			String date = cursor.getString(index1);
+			String annees = date.substring(0, 4);
+			String mois = date.substring(4, 6);
+			String jour = date.substring(6, 8);
+			date = jour + "-" + mois + "-" + annees;
+			buffer.add(date);
 		}
+		cursor.close();
+		sqliteDatabase.close();
+		return buffer;
+	}
 
 	// récupère la date correspondant à un index
 	public String getDate(int index) {
@@ -227,8 +212,7 @@ public class DataAdapter {
 			int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
 			String date2 = cursor.getString(index5);
 			Observation observation = new Observation(name, latitude,
-					longitude, path,date2);
-
+					longitude, path, date2);
 			myObservations.add(observation);
 		}
 		cursor.close();
@@ -257,12 +241,7 @@ public class DataAdapter {
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME
 				+ " VARCHAR(255), " + DATE + " VARCHAR(255), " + PATH_PHOTO
 				+ " VARCHAR(255), " + LAT + " DOUBLE," + LONG + " DOUBLE);";
-		/*private static final String CREATE_TABLE2 = "CREATE TABLE "
-				+ TABLE_DATE + " (" + UID_2
-				+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + DATE_UNIQUE
-				+ " VARCHAR(255), "/* + "UNIQUE (" + DATE_UNIQUE + ")  );";*/
-				
-		
+
 		private static final String DROP_TABLE = "DROP TABLE IF EXISTS OBSERVATIONS";
 
 		public BaseDonnees(Context context) {
@@ -275,17 +254,8 @@ public class DataAdapter {
 			// TODO Auto-generated method stub
 			try {
 				db.execSQL(CREATE_TABLE1);
-				Log.d("d", "creation table 1 réussie");
 			} catch (SQLException e) {
-				Log.d("d", "problème lors de la création de table name");
 			}
-		/*	try {
-				db.execSQL(CREATE_TABLE2);
-				Log.d("d", "creation table2 réussie");
-			} catch (SQLException e) {
-				Log.d("d", "problème lors de la création de table date");
-			}*/
-
 		}
 
 		@Override

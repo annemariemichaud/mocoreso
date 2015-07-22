@@ -68,12 +68,11 @@ public class AddObservation extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.ajout_observation2_layout);
+		setContentView(R.layout.addobservation_layout);
 
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowHomeEnabled(false);
-		View mActionBarView = getLayoutInflater().inflate(
-				R.layout.location_bar, null);
+		View mActionBarView = getLayoutInflater().inflate(R.layout.location_bar, null);
 		actionBar.setCustomView(mActionBarView);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		TextView textview_annuler = (TextView) findViewById(R.id.annuler);
@@ -225,7 +224,7 @@ public class AddObservation extends FragmentActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 		// traitement de la photo
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-			// Uri photoUri = null;
+			
 			if (photoFile != null) {
 				// A known bug here! The image should have saved in fileUri
 				Toast toast = Toast.makeText(this, "Image sauvegardée",
@@ -235,7 +234,7 @@ public class AddObservation extends FragmentActivity implements
 
 			} else {
 				
-				Toast.makeText(this, "Image not saved " // + data.getData()
+				Toast.makeText(this, "Image not saved " 
 						, Toast.LENGTH_LONG).show();
 			}
 
