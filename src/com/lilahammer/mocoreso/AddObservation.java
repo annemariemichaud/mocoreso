@@ -172,6 +172,7 @@ public class AddObservation extends FragmentActivity implements
 	private void updateUI() {
 
 		if (mCurrentLocation != null && map_ref != null) {
+			map_ref.clear();
 			LatLng observation = new LatLng(mCurrentLocation.getLatitude(),
 					mCurrentLocation.getLongitude());
 			lat = mCurrentLocation.getLatitude();

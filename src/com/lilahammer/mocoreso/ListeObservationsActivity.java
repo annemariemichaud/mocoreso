@@ -1,11 +1,24 @@
 package com.lilahammer.mocoreso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,9 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.GridView;
-import android.widget.Toast;
-
-import com.lilahammer.mocoreso.FragmentDate.OnSelectedListener;
+import android.widget.ProgressBar;
 
 public class ListeObservationsActivity extends Activity  {
 
@@ -27,14 +38,18 @@ public class ListeObservationsActivity extends Activity  {
 	boolean saisons[] = new boolean [4];
 	ArrayList<Observation> observationsUpdate;
 	private GridView gridview;
-	
+	private ProgressBar mProgressBar;
+	private Context c;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_activity);
+		mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
 		ActionBar actionBar = getActionBar();
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        c=getApplicationContext();
         for (int i=0;i<4;i++){
     		saisons[i]=true;
     	}
@@ -43,8 +58,11 @@ public class ListeObservationsActivity extends Activity  {
         
     	observations = dbmoco.getObservations();
         gridview = (GridView) findViewById(R.id.gridview);
-        
-        gridview.setAdapter(new ImageAdapter(this,observations));
+        //Start download
+        new GetImageData().execute(observations);
+        mProgressBar.setVisibility(View.VISIBLE);
+    
+    
 
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -53,8 +71,7 @@ public class ListeObservationsActivity extends Activity  {
             	String name = observations.get(position).getName();
             	i.putExtra("name",name);
             	startActivity(i);
-                //Toast.makeText(ListeObservationsActivity.this, "" + position,
-                  //      Toast.LENGTH_SHORT).show();
+                
             }
         });
 
@@ -103,8 +120,10 @@ public class ListeObservationsActivity extends Activity  {
 			if (saisons[observations.get(i).getSaisons()])
 				observationsUpdate.add(observations.get(i));
 		}
-		gridview.invalidateViews();
-		gridview.setAdapter(new ImageAdapter(this,observationsUpdate));
+		new GetImageData().execute(observationsUpdate);
+        mProgressBar.setVisibility(View.VISIBLE);
+		//gridview.invalidateViews();
+		//gridview.setAdapter(new ImageAdapter(this,observationsUpdate));
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
@@ -116,5 +135,98 @@ public class ListeObservationsActivity extends Activity  {
 		}
 		
 	}
+	//Downloading bitmap asynchronously
+	class GetImageData extends AsyncTask<ArrayList<Observation>, Void, Bitmap[]> {
+		
+		@Override
+		protected Bitmap[] doInBackground(ArrayList<Observation>... params) {
+			
+			ArrayList<Observation> obs = new ArrayList<Observation>();
+			obs = params[0];
+			String[] tab_images = new String[obs.size()];
+			Bitmap[] images_bitmap = new Bitmap[obs.size()];
+			for (int i = 0; i < obs.size(); i++) {
+				tab_images[i] = obs.get(i).getPath();
+			}
+			for (int i = 0; i < obs.size(); i++) {
+				// chargement des images
+				BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+				bmOptions.inJustDecodeBounds = true;
+				File file = new File(tab_images[i]);
+				Uri bitmapuri = Uri.fromFile(file);
+
+				try {
+					images_bitmap[i] = decodeSampledBitmapFromResource(bitmapuri,
+							150, 150);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+
+				}
+			}
+
+			return images_bitmap;
+		}
+		protected void onPostExecute(Bitmap [] result) {
+			 if (result !=null) {
+			        gridview.setAdapter(new ImageAdapter(c,result));
+
+			    } 
+			    mProgressBar.setVisibility(View.GONE);
+		}
+		
 	
+	public Bitmap decodeSampledBitmapFromResource(Uri uri, int reqWidth,
+			int reqHeight) throws IOException {
+
+		// First decode with inJustDecodeBounds=true to check dimensions
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		InputStream input = c.getContentResolver().openInputStream(uri);
+		BitmapFactory.decodeStream(input, null, options);
+		input.close();
+		if ((options.outWidth == -1) || (options.outHeight == -1))
+			return null;
+
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, reqWidth,
+				reqHeight);
+
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		input = c.getContentResolver().openInputStream(uri);
+		Bitmap bitmap = BitmapFactory.decodeStream(input, null, options);
+		input.close();
+		return bitmap;
+	}
+	public  int calculateInSampleSize(BitmapFactory.Options options,
+			int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+
+			// Calculate the largest inSampleSize value that is a power of 2 and
+			// keeps both
+			// height and width larger than the requested height and width.
+			while ((halfHeight / inSampleSize) > reqHeight
+					&& (halfWidth / inSampleSize) > reqWidth) {
+				inSampleSize *= 2;
+			}
+		}
+
+		return inSampleSize;
+	}
+	
+	}
 }
+
