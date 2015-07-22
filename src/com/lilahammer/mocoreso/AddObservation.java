@@ -1,25 +1,24 @@
 package com.lilahammer.mocoreso;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.media.ExifInterface;
-import android.media.MediaScannerConnection;
-import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -42,7 +41,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class AddObservation extends FragmentActivity implements OnMapReadyCallback,ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+public class AddObservation extends FragmentActivity implements
+		OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener,
+		LocationListener {
 
 	private Uri fileUri = null;
 	private File photoFile = null;
@@ -52,203 +53,191 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 	private DataAdapter dbmoco;
 	private int targetW;
 	private int targetH;
-	private int scaleFactor;
 	private Bitmap bitmap;
 	protected GoogleApiClient mGoogleApiClient;
 	protected Location mLastLocation;
 	private LocationRequest mLocationRequest;
 	private Location mCurrentLocation;
-	
 
 	private GoogleMap map_ref;
-	
+
 	String IMAGE_BUNDLE_KEY = "image";
 	private String imageFilePath;
-	private MediaScannerConnection conn; 
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.ajout_observation2_layout);
-		
+
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowHomeEnabled(false);
-		View mActionBarView = getLayoutInflater().inflate(R.layout.location_bar, null);
+		View mActionBarView = getLayoutInflater().inflate(
+				R.layout.location_bar, null);
 		actionBar.setCustomView(mActionBarView);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		TextView textview_annuler= (TextView)findViewById(R.id.annuler);
+		TextView textview_annuler = (TextView) findViewById(R.id.annuler);
 		textview_annuler.setOnClickListener(new OnClickListener() {
 
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-               finish();
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				finish();
 
-            }
-        });
-		TextView textview_enregistrer= (TextView)findViewById(R.id.enregistrer);
+			}
+		});
+		TextView textview_enregistrer = (TextView) findViewById(R.id.enregistrer);
 		textview_enregistrer.setOnClickListener(new OnClickListener() {
 
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-               saveObservation();
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				saveObservation();
 
-            }
-        });
-		if(savedInstanceState !=null){ 
-			bitmap = (Bitmap)savedInstanceState.get(IMAGE_BUNDLE_KEY);
+			}
+		});
+		if (savedInstanceState != null) {
+			bitmap = (Bitmap) savedInstanceState.get(IMAGE_BUNDLE_KEY);
 			if (bitmap != null) {
-			ImageButton mImageButton = (ImageButton) findViewById(R.id.add_photo);
-			mImageButton.setImageBitmap(bitmap); }
+				ImageButton mImageButton = (ImageButton) findViewById(R.id.add_photo);
+				mImageButton.setImageBitmap(bitmap);
+			}
 		}
-		
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+
+		MapFragment mapFragment = (MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
-		
+
 		buildGoogleApiClient();
-		
+
 	}
-	
-	
+
 	protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-	
-	 @Override
-	    protected void onStart() {
-	        super.onStart();
-	        mGoogleApiClient.connect();
-	    }
-	 	
-	    @Override
-	    protected void onStop() {
-	        super.onStop();
-	        if (mGoogleApiClient.isConnected()) {
-	            mGoogleApiClient.disconnect();
-	        }
-	    }
-	    
-	    @Override
-		protected void onPause() {
-		    super.onPause();
-		    if (mGoogleApiClient.isConnected()){
-		    stopLocationUpdates();
-		    }
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this)
+				.addApi(LocationServices.API).build();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mGoogleApiClient.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mGoogleApiClient.isConnected()) {
+			mGoogleApiClient.disconnect();
 		}
-	    
-	    @Override
-		public void onResume() {
-		    super.onResume();
-		    if (mGoogleApiClient.isConnected()) {
-		        startLocationUpdates();
-		    }
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mGoogleApiClient.isConnected()) {
+			stopLocationUpdates();
 		}
-	    
-	   
-		
-	    @Override
-	    public void onConnected(Bundle connectionHint) {
-	    	mLocationRequest = LocationRequest.create();
-	        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-	        mLocationRequest.setInterval(1000);
+	}
 
-	        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-	    	
-	        
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (mGoogleApiClient.isConnected()) {
+			startLocationUpdates();
+		}
+	}
 
-	    }
-	    
-	    protected void startLocationUpdates() {
-	        LocationServices.FusedLocationApi.requestLocationUpdates(
-	                mGoogleApiClient, mLocationRequest, this);
-	    }
-	    
-	    @Override
-	    public void onLocationChanged(Location location) {
-	        mCurrentLocation = location;
-	        updateUI();
-	    }
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		mLocationRequest = LocationRequest.create();
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		mLocationRequest.setInterval(1000);
 
-	    private void updateUI() {
-	    	
-	    	if (mCurrentLocation != null && map_ref !=null){
-	    	LatLng observation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-	    	lat = mCurrentLocation.getLatitude();
-	    	lon = mCurrentLocation.getLongitude();
-	        map_ref.setMyLocationEnabled(true);
-	        map_ref.moveCamera(CameraUpdateFactory.newLatLngZoom(observation, 13));
+		LocationServices.FusedLocationApi.requestLocationUpdates(
+				mGoogleApiClient, mLocationRequest, this);
 
-	        map_ref.addMarker(new MarkerOptions()
-	                .position(observation));}
-	    	
-	    	
-	    	
+	}
 
-	     //   mLatitudeTextView.setText(String.valueOf(mCurrentLocation.getLatitude()));
-	       // mLongitudeTextView.setText(String.valueOf(mCurrentLocation.getLongitude()));
-	        //LastUpdateTimeTextView.setText(mLastUpdateTime);
-	    }
+	protected void startLocationUpdates() {
+		LocationServices.FusedLocationApi.requestLocationUpdates(
+				mGoogleApiClient, mLocationRequest, this);
+	}
 
-	    @Override
-	    public void onConnectionFailed(ConnectionResult result) {
-	       
-	        Log.i("problème localisation", "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-	    }
+	@Override
+	public void onLocationChanged(Location location) {
+		mCurrentLocation = location;
+		updateUI();
+	}
 
-	    @Override
-	    public void onConnectionSuspended(int cause) {
-	        // The connection to Google Play services was lost for some reason. We call connect() to
-	        // attempt to re-establish the connection.
-	        Log.i("problème connexion", "Connection suspended");
-	        mGoogleApiClient.connect();
-	    }
-	
-	    protected void createLocationRequest() {
-	        LocationRequest mLocationRequest = new LocationRequest();
-	        mLocationRequest.setInterval(10000);
-	        mLocationRequest.setFastestInterval(5000);
-	        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-	    }
-	
+	private void updateUI() {
+
+		if (mCurrentLocation != null && map_ref != null) {
+			LatLng observation = new LatLng(mCurrentLocation.getLatitude(),
+					mCurrentLocation.getLongitude());
+			lat = mCurrentLocation.getLatitude();
+			lon = mCurrentLocation.getLongitude();
+			map_ref.setMyLocationEnabled(true);
+			map_ref.moveCamera(CameraUpdateFactory.newLatLngZoom(observation,
+					13));
+
+			map_ref.addMarker(new MarkerOptions().position(observation));
+		}
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+
+		Log.i("problème localisation",
+				"Connection failed: ConnectionResult.getErrorCode() = "
+						+ result.getErrorCode());
+	}
+
+	@Override
+	public void onConnectionSuspended(int cause) {
+		// The connection to Google Play services was lost for some reason. We
+		// call connect() to
+		// attempt to re-establish the connection.
+		Log.i("problème connexion", "Connection suspended");
+		mGoogleApiClient.connect();
+	}
+
+	protected void createLocationRequest() {
+		LocationRequest mLocationRequest = new LocationRequest();
+		mLocationRequest.setInterval(10000);
+		mLocationRequest.setFastestInterval(5000);
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	}
+
 	public void onMapReady(GoogleMap map) {
 		map_ref = map;
-		 
-	}
-	
-	protected void stopLocationUpdates() {
-	    LocationServices.FusedLocationApi.removeLocationUpdates(
-	            mGoogleApiClient, this);
-	}
-	
 
-	
-	
-	//récupère les résultats des deux méthodes précédentes
+	}
+
+	protected void stopLocationUpdates() {
+		LocationServices.FusedLocationApi.removeLocationUpdates(
+				mGoogleApiClient, this);
+	}
+
+	// récupère les résultats des deux méthodes précédentes
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		//traitement de la photo 
+		// traitement de la photo
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-		//	Uri photoUri = null;
+			// Uri photoUri = null;
 			if (photoFile != null) {
 				// A known bug here! The image should have saved in fileUri
-				Toast.makeText(this, "Image sauvegardée",
-						Toast.LENGTH_LONG).show();
-				//photoUri = fileUri;
+				Toast toast = Toast.makeText(this, "Image sauvegardée",
+						Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+				toast.show();
 
 			} else {
-				//photoUri = data.getData();
-				Toast.makeText(this,
-						"Image not saved " //+ data.getData()
-						,Toast.LENGTH_LONG).show();
+				
+				Toast.makeText(this, "Image not saved " // + data.getData()
+						, Toast.LENGTH_LONG).show();
 			}
-			
-			
+
 			try {
 				setPic(Uri.fromFile(photoFile));
 			} catch (IOException e) {
@@ -256,7 +245,7 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 				e.printStackTrace();
 			}
 		}
-		//traitement de la localisation 
+		// traitement de la localisation
 		if (requestCode == 2 && resultCode == RESULT_OK) {
 			String stringlatitude = data.getStringExtra("latitude");
 			String stringlongitude = data.getStringExtra("longitude");
@@ -264,47 +253,40 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 			lon = Double.parseDouble(stringlongitude);
 		}
 	}
+
 	// méthode pour prendre la photo
-		public void TakePicture(View view) {
-			if (photoFile !=null) {
-				photoFile.delete();
+	public void TakePicture(View view) {
+		if (photoFile != null) {
+			photoFile.delete();
+		}
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+			try {
+				photoFile = createImageFile();
+			} catch (IOException ex) {
+				// Error occurred while creating the File
+				Log.d("d", "probleme creation fichier");
 			}
-			Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-				try {
-					photoFile = createImageFile();
-				} catch (IOException ex) {
-					// Error occurred while creating the File
-					Log.d("d", "probleme creation fichier");
-				}
-				if (photoFile != null) {
-					takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-							Uri.fromFile(photoFile));
-					startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-					MediaScannerConnection.scanFile(getApplicationContext(), new String[] { photoFile.getAbsolutePath() }, null, new OnScanCompletedListener() {
+			if (photoFile != null) {
+				takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+						Uri.fromFile(photoFile));
+				startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
-		                @Override
-		                public void onScanCompleted(String path, Uri uri) {
-		                    // TODO Auto-generated method stub
-
-		                }
-		            });
-					//sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE ,
-					//	Uri.fromFile(photoFile)));
-					
-				}
 			}
 		}
+	}
+
 	// creer un nom de fichier unique pour la photo
 	private File createImageFile() throws IOException {
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());
 		String imageFileName = "/JPEG_" + timeStamp + "_.jpg";
-		
-		imageFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).
-			    getAbsolutePath() + imageFileName;  
-			    File imageFile = new File(imageFilePath); 
+
+		imageFilePath = Environment.getExternalStoragePublicDirectory(
+				Environment.DIRECTORY_PICTURES).getAbsolutePath()
+				+ imageFileName;
+		File imageFile = new File(imageFilePath);
 		return imageFile;
 	}
 
@@ -313,71 +295,57 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 			Log.d("d", "photoUri est null");
 		}
 		File imageFile = new File(photoUri.getPath());
-		
+
 		if (imageFile.exists()) {
 			ImageButton mImageButton = (ImageButton) findViewById(R.id.add_photo);
+
 			// Get the dimensions of the View
-			
-			 targetW = mImageButton.getWidth();
-			 targetH = mImageButton.getHeight();
-			// Get the dimensions of the bitmap
-			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-			bmOptions.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
-			int photoW = bmOptions.outWidth;
-			int photoH = bmOptions.outHeight;
-			Log.d("hauteur",Integer.toString(photoH));
-			Log.d("largeur",Integer.toString(photoW));
+			targetW = mImageButton.getWidth();
+			targetH = mImageButton.getHeight();
+			bitmap = decodeSampledBitmapFromResource(photoUri, targetW-50, targetH-50);
 
-			// Determine how much to scale down the image
-			if (targetW == 0 || targetH ==0)
-			{
-				Log.d("d","oups");
-			}
-			 scaleFactor = Math.min(photoW / 400, photoH / 300);
-			
-			// Decode the image file into a Bitmap sized to fill the View
-			bmOptions.inJustDecodeBounds = false;
-			bmOptions.inSampleSize = scaleFactor;
-			bmOptions.inPurgeable = true;
-
-		 bitmap = BitmapFactory.decodeFile(
-					imageFile.getAbsolutePath(), bmOptions);
-			if (mImageButton !=null)
-			{
-				Log.d("bitmap","non null");
-			}
-			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT,1f);
-			layoutParams.setMargins(20, 20, 20, 20);
+			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, 1f);
+			layoutParams.setMargins(10, 20, 10, 20);
 			mImageButton.setLayoutParams(layoutParams);
 			mImageButton.setImageBitmap(bitmap);
 		}
 	}
 
 	public void saveObservation() {
-			
+
 		EditText mEdit = (EditText) findViewById(R.id.name);
 		String name = mEdit.getText().toString();
-		if (photoFile != null  && !name.isEmpty() && (lat !=0 || lon !=0)){
+		if (photoFile != null && !name.isEmpty() && (lat != 0 || lon != 0)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			String currentDateandTime = sdf.format(new Date());
 			dbmoco = new DataAdapter(this);
 			dbmoco.insertObservation(name, lat, lon, currentDateandTime,
-				photoFile.getPath());
-		Toast.makeText(this, "Observation enregistrée",
-				Toast.LENGTH_LONG).show();
-		finish();}
-		else {
+					photoFile.getPath());
+			Toast toast = Toast.makeText(this, "Observation enregistrée",
+					Toast.LENGTH_SHORT);
+			toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+			toast.show();
+			finish();
+		} else {
 			if (photoFile == null) {
-				Toast.makeText(this, "Photo requise", Toast.LENGTH_LONG).show();
+				Toast toast = Toast.makeText(this, "Il faut ajouter une photo !",
+						Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+				toast.show();
+				
 				return;
 			}
 			if (name.isEmpty()) {
-				Toast.makeText(this, "Nom requis", Toast.LENGTH_LONG).show();
+				Toast toast = Toast.makeText(this, "Il faut donner un nom !",
+						Toast.LENGTH_SHORT);
+				toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 0);
+				toast.show();
 				return;
 			}
-			if (lat ==0 || lon ==0) {
-				Toast.makeText(this, "Localisation requise", Toast.LENGTH_LONG).show();
+			if (lat == 0 || lon == 0) {
+				Toast.makeText(this, "Localisation requise", Toast.LENGTH_LONG)
+						.show();
 				return;
 			}
 		}
@@ -387,37 +355,73 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 		finish();
 	}
 
-/*public void onSavedInstance(Bundle b){
-	if (bitmap != null){
-	b.putParcelable(IMAGE_BUNDLE_KEY, bitmap);}
-}
-	
+	public Bitmap decodeSampledBitmapFromResource(Uri uri, int reqWidth,
+			int reqHeight) throws IOException {
 
-public void onRestoreInstance(Bundle b){
-	if(bitmap !=null){
-	bitmap = (Bitmap)b.get(IMAGE_BUNDLE_KEY);
-	ImageButton mImageButton = (ImageButton) findViewById(R.id.add_photo);
-	mImageButton.setImageBitmap(bitmap);}
-}
-*/
-public void onSaveInstanceState(Bundle savedInstanceState) {
-	 if(photoFile != null){
-		  savedInstanceState.putParcelable("outputFileUri", Uri.fromFile(photoFile));
-	 }
-   super.onSaveInstanceState(savedInstanceState);
-}
+		// First decode with inJustDecodeBounds=true to check dimensions
+		final BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		InputStream input = this.getContentResolver().openInputStream(uri);
+		BitmapFactory.decodeStream(input, null, options);
+		input.close();
+		if ((options.outWidth == -1) || (options.outHeight == -1))
+			return null;
 
-@Override
-public void onRestoreInstanceState (Bundle savedInstanceState){
-	fileUri = savedInstanceState.getParcelable("outputFileUri");
-	if(fileUri != null) {
-	photoFile = new File(fileUri.getPath());
-	try {
-		setPic(Uri.fromFile(photoFile));
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}}
-}
-	
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, reqWidth,
+				reqHeight);
+
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		input = this.getContentResolver().openInputStream(uri);
+		Bitmap bitmap = BitmapFactory.decodeStream(input, null, options);
+		input.close();
+		return bitmap;
+	}
+
+	public static int calculateInSampleSize(BitmapFactory.Options options,
+			int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+
+			// Calculate the largest inSampleSize value that is a power of 2 and
+			// keeps both
+			// height and width larger than the requested height and width.
+			while ((halfHeight / inSampleSize) > reqHeight
+					&& (halfWidth / inSampleSize) > reqWidth) {
+				inSampleSize *= 2;
+			}
+		}
+		return inSampleSize;
+	}
+
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		if (photoFile != null) {
+			savedInstanceState.putParcelable("outputFileUri",
+					Uri.fromFile(photoFile));
+		}
+		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		fileUri = savedInstanceState.getParcelable("outputFileUri");
+		if (fileUri != null) {
+			photoFile = new File(fileUri.getPath());
+			try {
+				setPic(Uri.fromFile(photoFile));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 }
