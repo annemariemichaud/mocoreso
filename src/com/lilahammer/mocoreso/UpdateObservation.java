@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -119,10 +121,30 @@ else
 	public void deleteObservation() {
 		dbmoco = new DataAdapter(this);
 		int count = dbmoco.deleteData(oldname);
+		finish();
+		//Intent intent = new Intent(this, ListeObservationsActivity.class);
+		//startActivity(intent);
 		
-		Intent intent = new Intent(this, ListeObservationsActivity.class);
-		startActivity(intent);
-		
+	}
+	
+	public void confirmDelete() {
+		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        switch (which){
+		        case DialogInterface.BUTTON_POSITIVE:
+		        	deleteObservation();
+		        	break;
+
+		        case DialogInterface.BUTTON_NEGATIVE:
+		        	dialog.dismiss();		          
+		        	break;
+		        }
+		    }
+		};
+		AlertDialog.Builder ab = new AlertDialog.Builder(this);
+		    ab.setMessage("Effacer cette observation ?").setPositiveButton("Oui", dialogClickListener)
+		        .setNegativeButton("Non", dialogClickListener).show();
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
@@ -131,7 +153,7 @@ else
 			finish();
 			return true;
 		case (R.id.delete):
-			deleteObservation();
+			confirmDelete();
 			return true;
 		default :
 			return super.onOptionsItemSelected(item);
