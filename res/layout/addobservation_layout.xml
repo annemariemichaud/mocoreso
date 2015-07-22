@@ -32,7 +32,7 @@
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:onClick="TakePicture"
-            android:src="@drawable/ic_photo_camera_white_48dp"
+            android:src="@drawable/ic_photo_camera_white"
             android:contentDescription="@string/description" />
 
         <fragment
