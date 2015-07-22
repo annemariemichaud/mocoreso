@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Mocoreso</string>
-    
-    
+    <string name="nom">Nom de l\'observation</string>
+    <string name="description">Prendre une photo</string>
 
 </resources>
