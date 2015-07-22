@@ -5,11 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.ActionBar;
+import android.app.ActionBar.LayoutParams;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.OnScanCompletedListener;
 import android.net.Uri;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -173,7 +176,7 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 
 	    private void updateUI() {
 	    	
-	    	if (mCurrentLocation != null){
+	    	if (mCurrentLocation != null && map_ref !=null){
 	    	LatLng observation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 	    	lat = mCurrentLocation.getLatitude();
 	    	lon = mCurrentLocation.getLongitude();
@@ -246,7 +249,12 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 			}
 			
 			
-			setPic(Uri.fromFile(photoFile));
+			try {
+				setPic(Uri.fromFile(photoFile));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		//traitement de la localisation 
 		if (requestCode == 2 && resultCode == RESULT_OK) {
@@ -300,11 +308,12 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 		return imageFile;
 	}
 
-	private void setPic(Uri photoUri) {
+	private void setPic(Uri photoUri) throws IOException {
 		if (photoUri == null) {
 			Log.d("d", "photoUri est null");
 		}
 		File imageFile = new File(photoUri.getPath());
+		
 		if (imageFile.exists()) {
 			ImageButton mImageButton = (ImageButton) findViewById(R.id.add_photo);
 			// Get the dimensions of the View
@@ -325,7 +334,7 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 			{
 				Log.d("d","oups");
 			}
-			 scaleFactor = Math.min(photoW / 100, photoH / 50);
+			 scaleFactor = Math.min(photoW / 400, photoH / 300);
 			
 			// Decode the image file into a Bitmap sized to fill the View
 			bmOptions.inJustDecodeBounds = false;
@@ -338,6 +347,9 @@ public class AddObservation extends FragmentActivity implements OnMapReadyCallba
 			{
 				Log.d("bitmap","non null");
 			}
+			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT,1f);
+			layoutParams.setMargins(20, 20, 20, 20);
+			mImageButton.setLayoutParams(layoutParams);
 			mImageButton.setImageBitmap(bitmap);
 		}
 	}
@@ -392,7 +404,6 @@ public void onSaveInstanceState(Bundle savedInstanceState) {
 	 if(photoFile != null){
 		  savedInstanceState.putParcelable("outputFileUri", Uri.fromFile(photoFile));
 	 }
-  
    super.onSaveInstanceState(savedInstanceState);
 }
 
@@ -401,7 +412,12 @@ public void onRestoreInstanceState (Bundle savedInstanceState){
 	fileUri = savedInstanceState.getParcelable("outputFileUri");
 	if(fileUri != null) {
 	photoFile = new File(fileUri.getPath());
-	setPic(Uri.fromFile(photoFile));}
+	try {
+		setPic(Uri.fromFile(photoFile));
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}}
 }
 	
 }

@@ -15,6 +15,8 @@ public class DataAdapter {
 	// Variables pour accéder à la base de données
 	private BaseDonnees datamo; // définie dans une classe interne
 	private SQLiteDatabase sqliteDatabase;
+	private Observation observation;
+	private ArrayList<Observation> MyObservations;
 
 	// Constructeur
 	public DataAdapter(Context context) {
@@ -27,7 +29,7 @@ public class DataAdapter {
 
 		sqliteDatabase = datamo.getWritableDatabase();
 		
-				ContentValues contentValues2 = new ContentValues();
+			/*	ContentValues contentValues2 = new ContentValues();
 				contentValues2.put(BaseDonnees.DATE_UNIQUE, currentDateandTime);
 
 				long id2 = sqliteDatabase.insert(BaseDonnees.TABLE_DATE, null,
@@ -36,7 +38,7 @@ public class DataAdapter {
 					Log.d("d", "problème insertion données table date");
 				} else {
 					Log.d("d", "insertion réussie!");
-				}
+				}*/
 				
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(BaseDonnees.NAME, name);
@@ -90,6 +92,7 @@ public class DataAdapter {
 
 	// récupérer les observations par name
 	public Observation getObservationsByName(String oldname) {
+		
 		sqliteDatabase = datamo.getWritableDatabase();
 		String[] columns = { BaseDonnees.NAME, BaseDonnees.DATE,
 				BaseDonnees.LAT, BaseDonnees.LONG, BaseDonnees.PATH_PHOTO };
@@ -109,11 +112,40 @@ public class DataAdapter {
 			int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
 			String date = cursor.getString(index5);
 			observation = new Observation(name, latitude, longitude, path,date);
+			
 		}
 		cursor.close();
 		sqliteDatabase.close();
 		return observation;
 	}
+	
+	// récupérer toutes les observations 
+		public ArrayList<Observation> getObservations() {
+			
+			sqliteDatabase = datamo.getWritableDatabase();
+			String[] columns = { BaseDonnees.NAME, BaseDonnees.DATE,
+					BaseDonnees.LAT, BaseDonnees.LONG, BaseDonnees.PATH_PHOTO };
+			Cursor cursor = sqliteDatabase.query(BaseDonnees.TABLE_NAME, columns,
+					null, null, null, null,null);
+			MyObservations = new ArrayList<Observation>();
+			while (cursor.moveToNext()) {
+				int index1 = cursor.getColumnIndex(BaseDonnees.NAME);
+				String name = cursor.getString(index1);
+				int index2 = cursor.getColumnIndex(BaseDonnees.LAT);
+				double latitude = cursor.getDouble(index2);
+				int index3 = cursor.getColumnIndex(BaseDonnees.LONG);
+				double longitude = cursor.getDouble(index3);
+				int index4 = cursor.getColumnIndex(BaseDonnees.PATH_PHOTO);
+				String path = cursor.getString(index4);
+				int index5 = cursor.getColumnIndex(BaseDonnees.DATE);
+				String date = cursor.getString(index5);
+				observation = new Observation(name, latitude, longitude, path,date);
+				MyObservations.add(observation);
+			}
+			cursor.close();
+			sqliteDatabase.close();
+			return MyObservations;
+		}
 
 	// récupérer les observations par date
 	public ArrayList<String> getObservationsByDate(String currentDateandTime) {
@@ -225,10 +257,10 @@ public class DataAdapter {
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + NAME
 				+ " VARCHAR(255), " + DATE + " VARCHAR(255), " + PATH_PHOTO
 				+ " VARCHAR(255), " + LAT + " DOUBLE," + LONG + " DOUBLE);";
-		private static final String CREATE_TABLE2 = "CREATE TABLE "
+		/*private static final String CREATE_TABLE2 = "CREATE TABLE "
 				+ TABLE_DATE + " (" + UID_2
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT, " + DATE_UNIQUE
-				+ " VARCHAR(255), " + "UNIQUE (" + DATE_UNIQUE + ")  );";
+				+ " VARCHAR(255), "/* + "UNIQUE (" + DATE_UNIQUE + ")  );";*/
 				
 		
 		private static final String DROP_TABLE = "DROP TABLE IF EXISTS OBSERVATIONS";
@@ -247,12 +279,12 @@ public class DataAdapter {
 			} catch (SQLException e) {
 				Log.d("d", "problème lors de la création de table name");
 			}
-			try {
+		/*	try {
 				db.execSQL(CREATE_TABLE2);
 				Log.d("d", "creation table2 réussie");
 			} catch (SQLException e) {
 				Log.d("d", "problème lors de la création de table date");
-			}
+			}*/
 
 		}
 

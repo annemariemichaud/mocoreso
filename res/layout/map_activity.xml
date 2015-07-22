@@ -1,21 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-<fragment
-    android:layout_weight="2"
-   	android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:name="com.lilahammer.mocoreso.FragmentDate"
-    android:id="@+id/fragment_date"
-    android:layout_gravity="left|center_vertical"
-     />
+<LinearLayout 
+     android:orientation="horizontal"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:gravity="center">
+  <CheckBox android:id="@+id/checkbox_printemps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Printemps"
+        android:onClick="onCheckboxClicked"
+        android:checked="true"
+        android:textSize="20sp"/>
+  <CheckBox android:id="@+id/checkbox_ete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Eté"
+        android:onClick="onCheckboxClicked"
+        android:checked="true"
+         android:textSize="20sp"
+         android:layout_marginRight="50dp"/>
+  
+   <CheckBox android:id="@+id/checkbox_automne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Automne"
+        android:onClick="onCheckboxClicked"
+        android:checked="true"
+         android:textSize="20sp"/>
+   <CheckBox android:id="@+id/checkbox_hiver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hiver"
+        android:onClick="onCheckboxClicked"
+        android:checked="true"
+         android:textSize="20sp"/>
+  </LinearLayout>
+    
     <fragment 
         android:layout_weight="1"
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.MapFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:layout_marginRight="20dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="20dp" />
 </LinearLayout>

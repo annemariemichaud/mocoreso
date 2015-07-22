@@ -1,6 +1,9 @@
 package com.lilahammer.mocoreso;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
@@ -41,10 +44,22 @@ public class UpdateObservation extends Activity {
 		Observation observation = dbmoco.getObservationsByName(name);
 		edittext.setText(name);
 		date = observation.getDate();
+		//File file = new File(observation.getPath());
+		//photoFile = new File(observation.getPath());
+		//Uri bitmapuri = Uri.parse(file.toString());
+		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+		bmOptions.inJustDecodeBounds = true;
 		File file = new File(observation.getPath());
-		photoFile = new File(observation.getPath());
-		Uri bitmapuri = Uri.parse(file.toString());
-		setPic(bitmapuri);
+		Uri bitmapuri = Uri.fromFile(file);
+		try {
+			setPic(bitmapuri);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -56,51 +71,55 @@ public class UpdateObservation extends Activity {
 	}
 	
 	// met à jour l'imageButton avec la photo choisie par l'utilisateur
-	private void setPic(Uri photoUri) {
+	private void setPic(Uri photoUri) throws FileNotFoundException, IOException {
 		if (photoUri == null) {
 			Log.d("d", "photouri est null");
 		}
 		File imageFile = new File(photoUri.getPath());
 		if (imageFile.exists()) {
 			ImageView mImageButton = (ImageView) findViewById(R.id.photo);
-			// Get the dimensions of the View
-			/*
-			 * int targetW = mImageButton.getWidth(); int targetH =
-			 * mImageButton.getHeight();
-			 */
-			int targetW = 50;
-			int targetH = 50;
-			// Get the dimensions of the bitmap
-			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-			bmOptions.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
-			int photoW = bmOptions.outWidth;
-			int photoH = bmOptions.outHeight;
+			
 
-			// Determine how much to scale down the image
-			int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-			// Decode the image file into a Bitmap sized to fill the View
-			bmOptions.inJustDecodeBounds = false;
-			bmOptions.inSampleSize = scaleFactor;
-			bmOptions.inPurgeable = true;
-			Bitmap bitmap = BitmapFactory.decodeFile(
-					imageFile.getAbsolutePath(), bmOptions);
-
-			mImageButton.setImageBitmap(bitmap);
+			mImageButton.setImageBitmap(getImage(photoUri));
 		}
 	}
 
-	
+	public Bitmap getImage(Uri uri) throws FileNotFoundException,
+	IOException {
+InputStream input =this.getContentResolver().openInputStream(uri);
+BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+onlyBoundsOptions.inJustDecodeBounds = true;
+onlyBoundsOptions.inDither = true;// optional
+onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// optional
+BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+input.close();
+if ((onlyBoundsOptions.outWidth == -1)
+		|| (onlyBoundsOptions.outHeight == -1))
+	return null;
+int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight
+		: onlyBoundsOptions.outWidth;
+double ratio = (originalSize > 1000) ? (originalSize / 500) : 1.0;
+BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
+bitmapOptions.inDither = true;// optional
+bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// optional
+input = this.getContentResolver().openInputStream(uri);
+Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+input.close();
+return bitmap;
+}
+
+private static int getPowerOfTwoForSampleRatio(double ratio) {
+int k = Integer.highestOneBit((int) Math.floor(ratio));
+if (k == 0)
+	return 1;
+else
+	return k;
+}
 	public void deleteObservation() {
 		dbmoco = new DataAdapter(this);
 		int count = dbmoco.deleteData(oldname);
-		ArrayList<Observation> observation_restante = new ArrayList<Observation>();
-		observation_restante = dbmoco.getAllLocalisation(date);
-		int longueur_liste = observation_restante.size();
-		if (longueur_liste == 0)
-		{
-			dbmoco.deleteDate(date);
-		}
+		
 		Intent intent = new Intent(this, ListeObservationsActivity.class);
 		startActivity(intent);
 		
@@ -110,9 +129,10 @@ public class UpdateObservation extends Activity {
 		switch(item.getItemId()){
 		case (android.R.id.home) :
 			finish();
+			return true;
 		case (R.id.delete):
 			deleteObservation();
-			
+			return true;
 		default :
 			return super.onOptionsItemSelected(item);
 		}
