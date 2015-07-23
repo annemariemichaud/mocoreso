@@ -25,20 +25,24 @@ public class ImageAdapter extends BaseAdapter {
 
 	}
 
+	@Override
 	public int getCount() {
 
 		return images_bitmap.length;
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return null;
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return 0;
 	}
 
 	// create a new ImageView for each item referenced by the Adapter
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,7 +59,7 @@ public class ImageAdapter extends BaseAdapter {
 			imageView.setImageBitmap(images_bitmap[position]);
 
 		} else {
-			gridView = (View) convertView;
+			gridView = convertView;
 		}
 
 		return gridView;

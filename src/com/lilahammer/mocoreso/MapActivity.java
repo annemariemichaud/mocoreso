@@ -56,7 +56,7 @@ public class MapActivity extends Activity {
 
 			while (it.hasNext()) {
 
-				Observation tmpobs = (Observation) it.next();
+				Observation tmpobs = it.next();
 
 				double latitude = tmpobs.getLatitude();
 
@@ -141,7 +141,7 @@ public class MapActivity extends Activity {
 		Iterator<Observation> it = observationsUpdate.iterator();
 
 		while (it.hasNext()) {
-			Observation tmpobs = (Observation) it.next();
+			Observation tmpobs = it.next();
 			double latitude = tmpobs.getLatitude();
 
 			double longitude = tmpobs.getLongitude();

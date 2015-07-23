@@ -73,7 +73,7 @@ public class UpdateObservation extends Activity {
 		File imageFile = new File(photoUri.getPath());
 		if (imageFile.exists()) {
 			ImageView mImageButton = (ImageView) findViewById(R.id.photo);
-			int valueInPixels = (int) getResources().getDimensionPixelSize(R.dimen.size_display);
+			int valueInPixels = getResources().getDimensionPixelSize(R.dimen.size_display);
 			mImageButton.setImageBitmap(decodeSampledBitmapFromResource(photoUri,valueInPixels,valueInPixels/2));
 		}
 	}

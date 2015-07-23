@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.ActionBar;
-import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +16,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -78,6 +79,7 @@ public class AddObservation extends FragmentActivity implements
 		TextView textview_annuler = (TextView) findViewById(R.id.annuler);
 		textview_annuler.setOnClickListener(new OnClickListener() {
 
+			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				finish();
@@ -87,6 +89,7 @@ public class AddObservation extends FragmentActivity implements
 		TextView textview_enregistrer = (TextView) findViewById(R.id.enregistrer);
 		textview_enregistrer.setOnClickListener(new OnClickListener() {
 
+			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				saveObservation();
@@ -177,6 +180,7 @@ public class AddObservation extends FragmentActivity implements
 			lat = mCurrentLocation.getLatitude();
 			lon = mCurrentLocation.getLongitude();
 			map_ref.setMyLocationEnabled(true);
+			map_ref.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 			map_ref.moveCamera(CameraUpdateFactory.newLatLngZoom(observation,
 					13));
 
@@ -208,6 +212,7 @@ public class AddObservation extends FragmentActivity implements
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 	}
 
+	@Override
 	public void onMapReady(GoogleMap map) {
 		map_ref = map;
 
@@ -305,13 +310,20 @@ public class AddObservation extends FragmentActivity implements
 			bitmap = decodeSampledBitmapFromResource(photoUri, targetW-50, targetH-50);
 
 			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-					0, LayoutParams.MATCH_PARENT, 1f);
-			layoutParams.setMargins(10, 20, 10, 20);
+					0, android.view.ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+			DisplayMetrics dm = this.getResources().getDisplayMetrics();
+			layoutParams.setMargins(convertDpToPx(10, dm), convertDpToPx(20, dm), convertDpToPx(10, dm),convertDpToPx(20, dm));
 			mImageButton.setLayoutParams(layoutParams);
 			mImageButton.setImageBitmap(bitmap);
 		}
 	}
 
+	//conversion en tenant compte de la dp
+	
+	private int convertDpToPx(int dp, DisplayMetrics displayMetrics) {
+	    float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
+	    return Math.round(pixels);
+	}
 	public void saveObservation() {
 
 		EditText mEdit = (EditText) findViewById(R.id.name);
@@ -402,6 +414,7 @@ public class AddObservation extends FragmentActivity implements
 		return inSampleSize;
 	}
 
+	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		if (photoFile != null) {
 			savedInstanceState.putParcelable("outputFileUri",

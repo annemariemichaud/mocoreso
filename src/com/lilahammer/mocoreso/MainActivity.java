@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
 				.setCancelable(false)
 				.setPositiveButton("Yes",
 						new DialogInterface.OnClickListener() {
+							@Override
 							public void onClick(
 									@SuppressWarnings("unused") final DialogInterface dialog,
 									@SuppressWarnings("unused") final int id) {
@@ -55,6 +56,7 @@ public class MainActivity extends Activity {
 							}
 						})
 				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(final DialogInterface dialog,
 							@SuppressWarnings("unused") final int id) {
 						dialog.cancel();

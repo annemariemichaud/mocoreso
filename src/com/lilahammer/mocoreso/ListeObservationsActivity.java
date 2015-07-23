@@ -62,6 +62,7 @@ public class ListeObservationsActivity extends Activity {
 		mProgressBar.setVisibility(View.VISIBLE);
 
 		gridview.setOnItemClickListener(new OnItemClickListener() {
+			@Override
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				Intent i = new Intent(v.getContext(), UpdateObservation.class);
@@ -156,7 +157,7 @@ public class ListeObservationsActivity extends Activity {
 				Uri bitmapuri = Uri.fromFile(file);
 
 				try {
-					int valueInPixels = (int) getResources().getDimensionPixelSize(R.dimen.size_photo);
+					int valueInPixels = getResources().getDimensionPixelSize(R.dimen.size_photo);
 					images_bitmap[i] = decodeSampledBitmapFromResource(
 							bitmapuri, valueInPixels, valueInPixels/2);
 				} catch (FileNotFoundException e) {
@@ -173,6 +174,7 @@ public class ListeObservationsActivity extends Activity {
 			return images_bitmap;
 		}
 
+		@Override
 		protected void onPostExecute(Bitmap[] result) {
 			if (result != null) {
 				gridview.setAdapter(new ImageAdapter(c, result));
